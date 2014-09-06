@@ -44,5 +44,8 @@ class WAVFile
         DATA m_data;
 
         WAVFile(const std::string file);
+        WAVFile(void *data, unsigned int length, unsigned short bits_per_sample);
         ~WAVFile();
+
+        void writeToFile(const std::string file);
 };
