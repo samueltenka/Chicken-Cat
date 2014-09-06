@@ -8,7 +8,7 @@ import wave, struct
 
 '''read wave into list of amplitudes in [-1, 1]'''
 amplitudes = []
-with wave.open('sam_ahh_0414.wav', 'r') as waveFile:
+with wave.open('square_0440.wav', 'r') as waveFile:
   length = waveFile.getnframes()
   for i in range(0,length):
       waveData = waveFile.readframes(1)
@@ -35,5 +35,16 @@ def intensity(frequency):
   return sum(intensity_(frequency, t, t+0.01) for t in [i/100 for i in range(100)]) / 100
 
 
-for f in range(300, 450, 5):
-  print(f, intensity(f))
+def base_freq(min_f, max_f, S=5):
+  '''finds strongest harmonic'''
+  print(min_f, max_f)
+  step = min(50, int((max_f-min_f)/S))
+  if step!=0:
+    diff = (max_f-min_f)/S
+    freqs = [min_f + i*diff for i in range(S)]
+    c = max((intensity(f), f) for f in freqs)[1]
+    return base_freq(max(0, c-diff), c+diff)
+  else:
+    return max_f
+
+print(base_freq(20, 20000))
