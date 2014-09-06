@@ -24,13 +24,14 @@ class Record:
       self.amps = other.amps[:]
    def read_from(self, filename):
       ''' reads mono PCM16 '''
+      ''' thx to http://stackoverflow.com/questions/2060628/how-to-read-wav-file-in-python '''
       self.amps = []
       with wave.open(filename, 'r') as waveFile:
          length = waveFile.getnframes()
          for i in range(0,length):
             waveData = waveFile.readframes(1)
             data = struct.unpack("<h", waveData)
-            self.amps.append(data[0] / 32768.0)
+            self.amps.append(data[0] / 32767)
       self.duration = duration_of(self.amps)
    def generate_silence(self, dur):
       self.duration = dur
@@ -38,6 +39,13 @@ class Record:
    def generate_sin(self, dur, freq):
       self.duration = dur; omega = 2*pi*freq
       self.amps = [sin(omega*to_physical_time(i)) for i in make_range(dur)]
+
+   def write_to(self, filename):
+      with wave.open(filename, 'w') as waveFile:
+        waveFile.setparams((1, 2, 44100, 0, 'NONE', 'not compressed'))
+        for a in self.amps:
+          waveFile.writeframes(struct.pack('h', int(a*32767)))
+        
    def dot(self, other):
       if self.duration == other.duration:
          return sum(mine*theirs for mine,theirs in zip(self.amps, other.amps))
@@ -47,3 +55,4 @@ R = Record(duration=1.0, freq=2*pi*440)
 print(R.dot(R)) ## get 22050 = 44100/2, correct
 
 S = Record(filename='C:\\Users\\Sam\\Desktop\\MHacks\\sam_ahh_0414.wav')
+R.write_to('hi.wav')
