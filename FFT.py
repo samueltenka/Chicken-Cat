@@ -37,8 +37,8 @@ def FFT(my_list):
       return plus(evens+evens, times(odds+odds, phase_shifts))
 
 def IFFT(coefficients):
-   return [c.conjugate()/len(coefficients) \
-           for c in FFT(coefficients)]
+   conjugated = [c.conjugate() for c in coefficients]
+   return [c/len(coefficients) for c in FFT(conjugated)]
 
 from random import random
 from math import pi
@@ -47,4 +47,3 @@ S1_rand = lambda: expi(random()*2*pi)
 a = [1, 2, 3, 4]
 f = FFT(a)
 b = IFFT(f)
-
