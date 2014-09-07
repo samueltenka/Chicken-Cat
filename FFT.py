@@ -29,7 +29,7 @@ def SFT(my_list):
 def FFT(my_list):
    ''' assumes my_list has power-of-two length. '''
    N = len(my_list)
-   if N <= 1:
+   if N <= 32:
       return SFT(my_list)
    else:
       evens, odds = FFT(my_list[::2]), FFT(my_list[1::2])
@@ -43,7 +43,9 @@ def IFFT(coefficients):
 from random import random
 from math import pi
 S1_rand = lambda: expi(random()*2*pi)
-#a = [S1_rand() for i in range(4)]
-a = [1, 2, 3, 4]
+a = [S1_rand() for i in range(256)]
+# = [1, 2, 3, 4]
 f = FFT(a)
 b = IFFT(f)
+print('|b-a|^2:', sum((abs(bb-aa))**2 for aa,bb in zip(a, b)))
+print('sum of energues:', sum((abs(ff)/len(a))**2 for ff in f))
