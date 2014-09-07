@@ -7,6 +7,9 @@ to_discrete_ind = lambda phys_time: int(phys_time*44100)
 duration_of = lambda amps: to_physical_time(len(amps))
 make_range = lambda dur: range(to_discrete_ind(dur))
 
+to_pressure = lambda pcm: pcm/32767
+from_pressure = lambda press: int(max(-32767, min(+32767, press*32767)))
+
 class Record:
    def __init__(self, filename='', source=None, duration=0.0, freq=0.0):
       if filename:
@@ -36,7 +39,7 @@ class Record:
          for i in range(0,length):
             waveData = waveFile.readframes(1)
             data = struct.unpack("<h", waveData)
-            self.amps.append(data[0] / 32767)
+            self.amps.append(to_pressure(data[0]))
       self.duration = duration_of(self.amps)
    def generate_silence(self, dur):
       self.duration = dur
@@ -49,10 +52,15 @@ class Record:
       with wave.open(filename, 'w') as waveFile:
         waveFile.setparams((1, 2, 44100, 0, 'NONE', 'not compressed'))
         for a in self.amps:
-          waveFile.writeframes(struct.pack('h', int(a*32767)))
+          waveFile.writeframes(struct.pack('h', from_pressure(a)))
         
    def sub(self, start, dur):
-      return Record(source=self.amps[to_discrete_ind(start):to_discrete_ind(start+dur)])
+      rtrn = Record(source=self.amps[to_discrete_ind(start):to_discrete_ind(start)+to_discrete_ind(dur)])
+      if rtrn.duration != dur:
+         print('!  ', start, dur)
+         print('!  ', to_discrete_ind(start), to_discrete_ind(start+dur))
+         print('!!!', rtrn.duration, dur)
+      return rtrn
    def reverse(self):
       self.amps = self.amps[::-1]
    def join_from(self, subs):
