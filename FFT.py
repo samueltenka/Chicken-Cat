@@ -41,9 +41,8 @@ def IFFT(coefficients):
    return [c/len(coefficients) for c in FFT(conjugated)]
 
 from random import random
-S1_rand = lambda: random()*2*pi
+S1_rand = lambda: expi(random()*2*pi)
 a = [S1_rand() for i in range(256)]
-#a = [1, 2, 3, 4, 0, 6, 7, 8]
 f = FFT(a)
 b = IFFT(f)
 print('|b-a|^2:', sum((abs(bb-aa))**2 for aa,bb in zip(a, b)))
