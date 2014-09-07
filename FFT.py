@@ -33,7 +33,7 @@ def FFT(my_list):
       return SFT(my_list)
    else:
       evens, odds = FFT(my_list[::2]), FFT(my_list[1::2])
-      phase_shifts = wave(N, 2*pi/N)
+      phase_shifts = wave(N, -2*pi/N)
       return plus(evens+evens, times(odds+odds, phase_shifts))
 
 def IFFT(coefficients):
@@ -41,11 +41,10 @@ def IFFT(coefficients):
    return [c/len(coefficients) for c in FFT(conjugated)]
 
 from random import random
-from math import pi
-S1_rand = lambda: expi(random()*2*pi)
+S1_rand = lambda: random()*2*pi
 a = [S1_rand() for i in range(256)]
-# = [1, 2, 3, 4]
+#a = [1, 2, 3, 4, 0, 6, 7, 8]
 f = FFT(a)
 b = IFFT(f)
 print('|b-a|^2:', sum((abs(bb-aa))**2 for aa,bb in zip(a, b)))
-print('sum of energues:', sum((abs(ff)/len(a))**2 for ff in f))
+print('sum of energies:', sum((abs(ff)/len(a))**2 for ff in f))
