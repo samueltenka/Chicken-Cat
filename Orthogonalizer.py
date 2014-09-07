@@ -1,4 +1,5 @@
-from Record_04 import Record
+from Record_05 import Record
+from math import sqrt
 
 '''read control and target samples, 2 seconds each:'''
 sound_names = ['ahh',
@@ -13,8 +14,8 @@ sound_names = ['ahh',
                'ung']
 training_pairs = {}
 for name in sound_names:
-   training_pairs[name] = (Record(duration=.2, filename='data\\'+name.upper()+'220_brian.wav'),
-                           Record(duration=.2, filename='data\\'+name.upper()+'220_sam.wav'))
+   training_pairs[name] = (Record(duration=.5, filename='data\\'+name.upper()+'220_brian.wav'),
+                           Record(duration=.5, filename='data\\'+name.upper()+'220_sam.wav'))
    print('read', name)
 
 ''' orthonormalize control samples (transforming target samples along for the ride '''
@@ -28,10 +29,11 @@ for name in sound_names:
       if prev==name:
          break
       pc = ons[prev][0]
-      coeff = c.dot(pc)
+      coeff = c.smart_dot(pc)
       oc = oc.minus(pc.times(coeff)); ot = ot.minus(pc.times(coeff))
    '''normalize:'''
-   onc = oc.times(oc.dot(oc)**(-0.5)); ont = ot.times(oc.dot(oc)**(-0.5))
+   norm = sqrt(oc.smart_dot(oc))
+   onc = oc.times(1.0/norm); ont = ot.times(1.0/norm)
    ons[name] = (onc, ont)
    print('orthonormalized', name)
 
