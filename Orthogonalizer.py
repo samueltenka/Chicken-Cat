@@ -13,8 +13,8 @@ sound_names = ['ahh',
                'ung']
 training_pairs = {}
 for name in sound_names:
-   training_pairs[name] = (Record(duration=0.2, filename='data\\'+name.upper()+'220_brian.wav'),
-                           Record(duration=0.2, filename='data\\'+name.upper()+'220_sam.wav'))
+   training_pairs[name] = (Record(duration=.2, filename='data\\'+name.upper()+'220_brian.wav'),
+                           Record(duration=.2, filename='data\\'+name.upper()+'220_sam.wav'))
    print('read', name)
 
 ''' orthonormalize control samples (transforming target samples along for the ride '''
@@ -34,3 +34,13 @@ for name in sound_names:
    onc = oc.times(oc.dot(oc)**(-0.5)); ont = ot.times(oc.dot(oc)**(-0.5))
    ons[name] = (onc, ont)
    print('orthonormalized', name)
+
+''' write '''
+for name in sound_names:
+   c, t = ons[name]
+   c.write_to('orthonormalized\\_'+name.upper()+'220_brian.wav')
+   t.write_to('orthonormalized\\_'+name.upper()+'220_sam.wav')
+   C, T = training_pairs[name]
+   C.write_to('orthonormalized\\'+name.upper()+'220_brian.wav')
+   T.write_to('orthonormalized\\'+name.upper()+'220_sam.wav')
+   print('wrote', name)
