@@ -1,5 +1,5 @@
 import wave, struct
-from math import sin, pi
+from math import sin, pi, sqrt
 
 RATE = 44100
 to_physical_time = lambda disc_ind: disc_ind/44100
@@ -64,7 +64,14 @@ class Record:
 
    def dot(self, other):
       if self.duration == other.duration:
-         return sum(mine*theirs for mine,theirs in zip(self.amps, other.amps))
+         integral = sum(mine*theirs for mine,theirs in zip(self.amps, other.amps))
+         return integral / self.duration
+   def smart_dot(self, other):
+      if self.duration == other.duration:
+         segs = int(self.duration*50)
+         starts = [i*0.02 for i in range(segs)]
+         small_dots = [self.sub(t, 0.02).dot(other.sub(t, 0.02)) for t in starts]
+         return sqrt(sum(sd*sd for sd in small_dots)) / segs
    def times(self, num):
       return Record(source=[a*num for a in self.amps])
    def plus(self, other):
