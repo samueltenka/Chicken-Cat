@@ -66,10 +66,12 @@ class Record:
       if self.duration == other.duration:
          return sum(mine*theirs for mine,theirs in zip(self.amps, other.amps))
    def times(self, num):
-      self.amps = [a*num for a in self.amps]
+      return Record([a*num for a in self.amps])
    def plus(self, other):
       if self.duration == other.duration:
          return Record([mine+theirs for mine,theirs in zip(self.amps, other.amps)])
+   def minus(self, other):
+      return self.plus(other.times(-1))
       
 
     
